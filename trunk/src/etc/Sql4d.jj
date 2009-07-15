@@ -1,0 +1,43 @@
+options{
+    IGNORE_CASE=true ;
+}
+
+PARSER_BEGIN(Sql4d)
+public class Sql4d {
+  public static void main(String args[]) throws Exception {
+    Sql4d parser = new Sql4d(new java.io.ByteArrayInputStream(args[0].getBytes()));
+    parser.Input();
+  }
+}
+PARSER_END(Sql4d)
+
+SKIP : 
+{
+  " " 
+| "\t"
+| "\n"
+| "\r"
+| "\f"
+}
+
+TOKEN :
+{
+  < SELECT: "select" > 
+| < FROM: "from" >
+| < WHERE: "where" >
+| < ITEM: (["a"-"z","0"-"9"])+ >
+| < VALUE: (("'")?(<ITEM>)+("'")?) >
+| < IDENTICAL_EQUATION: (<ITEM>"="<VALUE>) >
+}
+
+void Input() :
+{}
+{
+  <SELECT> [Fields()] <FROM> <ITEM> ( <WHERE> <IDENTICAL_EQUATION>)? <EOF>
+}
+
+void Fields() :
+{}
+{ 
+  ( <ITEM> (","<ITEM> )? | "*" )
+}
